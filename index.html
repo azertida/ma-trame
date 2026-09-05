@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Ma trame</title>
+<meta name="description" content="La trame de votre semaine, pro et perso.">
+<meta name="theme-color" content="#F6F1E7">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Ma trame">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+<style>
+:root{
+  --paper:#F6F1E7;
+  --paper-deep:#EDE5D6;
+  --ink:#2E2A26;
+  --muted:#8A8073;
+  --line:#DCD2C0;
+  --accent:#C0673A;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{overflow-x:hidden;max-width:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--paper);color:var(--ink);line-height:1.5;
+  padding:20px 16px 40px;-webkit-text-size-adjust:100%;
+}
+.wrap{max-width:620px;margin:0 auto}
+h1{font-size:1.5rem;font-weight:600;letter-spacing:-0.02em}
+.sub{color:var(--muted);font-size:0.9rem;margin-top:2px}
+section{margin-top:26px}
+h2{font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.09em;color:var(--muted);margin-bottom:10px}
+.h2row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.h2row h2{margin-bottom:0}
+
+/* ---- Carte ---- */
+.carte{background:#FFFDF8;border:1px solid var(--line);border-radius:12px;padding:12px 10px 10px}
+.ct-grid{display:grid;grid-template-columns:2.6rem repeat(7,1fr);gap:3px}
+.ct-head{text-align:center;font-size:0.66rem;font-weight:600;color:var(--muted);padding-bottom:5px}
+.ct-axis{position:relative}
+.ct-axis span{
+  position:absolute;right:5px;transform:translateY(-50%);
+  font-size:0.6rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+.ct-col{position:relative;background:var(--paper-deep);border-radius:5px}
+.ct-bloc{position:absolute;left:1px;right:1px;border-radius:3px}
+.ct-empty{text-align:center;color:var(--muted);font-size:0.86rem;padding:28px 12px}
+.ct-legend{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:12px;font-size:0.74rem;color:var(--muted)}
+.ct-legend span{display:flex;align-items:center;gap:6px;min-width:0}
+.ct-legend i{width:11px;height:11px;border-radius:3px;flex:none}
+
+/* ---- Listes ---- */
+.jour{border-bottom:1px solid var(--line);padding-bottom:12px}
+.jour:last-child{border-bottom:none}
+.jour-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:10px 0 6px}
+.jour-nom{font-weight:600;font-size:1rem}
+.add{
+  font:inherit;font-size:0.8rem;background:transparent;border:1px solid var(--line);
+  border-radius:20px;padding:5px 13px;color:var(--muted);cursor:pointer;white-space:nowrap;flex:none;
+}
+.add:hover{border-color:var(--ink);color:var(--ink)}
+.rien{font-size:0.85rem;color:var(--muted);padding:2px 0 4px}
+
+/* ---- Lignes (blocs, modèles, catégories) ---- */
+.row{
+  display:flex;align-items:center;gap:11px;flex-wrap:wrap;background:#FFFDF8;
+  border:1px solid var(--line);border-radius:9px;padding:10px 12px;margin-bottom:7px;
+}
+.row.actif{border-color:var(--ink);background:var(--paper-deep)}
+.row .puce{width:14px;height:14px;border-radius:4px;flex:none}
+.row .txt{flex:1;min-width:5.5rem;overflow-wrap:anywhere}
+.row .nm{font-weight:600;font-size:0.95rem;line-height:1.3}
+.row .det{font-size:0.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.row-btns{display:flex;gap:6px;align-items:center;margin-left:auto;flex:none}
+.mv{
+  width:34px;height:34px;padding:0;line-height:1;flex:none;font:inherit;font-size:0.95rem;
+  background:transparent;border:1px solid var(--line);border-radius:8px;color:var(--muted);cursor:pointer;
+}
+.mv:hover:not(:disabled){border-color:var(--ink);color:var(--ink)}
+.mv:disabled{opacity:0.28;cursor:default}
+.mini{
+  font:inherit;font-size:0.78rem;background:transparent;border:1px solid var(--line);
+  border-radius:20px;padding:5px 12px;color:var(--muted);cursor:pointer;flex:none;white-space:nowrap;
+}
+.mini:hover{border-color:var(--ink);color:var(--ink)}
+.mini.on{border-color:var(--ink);color:var(--ink);font-weight:600}
+.del{
+  font:inherit;font-size:1.05rem;background:transparent;border:none;
+  color:var(--line);cursor:pointer;padding:2px 4px;flex:none;line-height:1;
+}
+.del:hover{color:var(--accent)}
+.vide{border:1px dashed var(--line);border-radius:11px;padding:18px 15px;font-size:0.89rem;color:var(--muted)}
+
+/* ---- Sauvegarde ---- */
+.sauv{display:flex;gap:8px;flex-wrap:wrap}
+.sauv .mini{padding:10px 20px;font-size:0.88rem}
+.note{font-size:0.8rem;color:var(--muted);margin-top:11px;line-height:1.55}
+.toast{
+  position:fixed;left:50%;bottom:22px;transform:translateX(-50%);
+  background:var(--ink);color:var(--paper);padding:11px 18px;border-radius:22px;
+  font-size:0.88rem;z-index:80;opacity:0;pointer-events:none;transition:opacity 0.2s ease;
+  max-width:92vw;text-align:center;
+}
+.toast.on{opacity:1}
+
+/* ---- Feuilles ---- */
+.sheet{position:fixed;inset:0;background:rgba(46,42,38,0.4);display:none;align-items:flex-end;justify-content:center;z-index:60}
+.sheet.on{display:flex}
+.sheet-in{
+  background:var(--paper);width:100%;max-width:620px;border-radius:16px 16px 0 0;
+  padding:20px 18px calc(24px + env(safe-area-inset-bottom));max-height:88vh;overflow-y:auto;
+}
+.sheet-in h3{font-size:1.05rem;font-weight:600;margin-bottom:3px}
+.sheet-in p.quand{font-size:0.85rem;color:var(--muted);margin-bottom:18px}
+.lbl{font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px}
+.choix{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.opt{
+  display:flex;align-items:center;gap:11px;font:inherit;font-size:0.95rem;width:100%;
+  background:#FFFDF8;border:1px solid var(--line);border-radius:10px;
+  padding:12px 13px;cursor:pointer;text-align:left;color:var(--ink);
+}
+.opt[aria-pressed="true"]{border-color:var(--ink);background:var(--paper-deep);font-weight:600}
+.opt .puce{width:15px;height:15px;border-radius:4px;flex:none}
+.opt span.n{min-width:0;overflow-wrap:anywhere}
+.times{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+.times select,.times input{
+  flex:1;min-width:0;font:inherit;font-size:1rem;padding:11px;background:#FFFDF8;
+  border:1px solid var(--line);border-radius:9px;color:var(--ink);
+}
+.times em{font-style:normal;color:var(--muted);font-size:0.85rem;flex:none}
+input[type=text]{
+  width:100%;font:inherit;font-size:1rem;padding:11px;background:#FFFDF8;
+  border:1px solid var(--line);border-radius:9px;color:var(--ink);margin-bottom:16px;
+}
+input[type=text]:focus,select:focus{outline:2px solid var(--ink);outline-offset:-1px}
+.pal{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:20px}
+.pal button{
+  width:40px;height:40px;border-radius:10px;border:2px solid transparent;cursor:pointer;padding:0;
+}
+.pal button[aria-pressed="true"]{border-color:var(--ink)}
+.pal button:disabled{opacity:0.22;cursor:default}
+.warn{
+  background:#F3DFD2;border:1px solid var(--accent);color:#7A3F1E;
+  border-radius:9px;padding:10px 12px;font-size:0.83rem;margin-bottom:14px;
+}
+.hint{font-size:0.78rem;color:var(--muted);margin:-6px 0 16px}
+.btn{
+  width:100%;padding:14px;font:inherit;font-size:0.98rem;font-weight:600;
+  background:var(--ink);color:var(--paper);border:none;border-radius:9px;cursor:pointer;
+}
+.btn:disabled{opacity:0.35;cursor:default}
+.btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--line);font-weight:400;font-size:0.88rem;padding:11px;margin-top:9px}
+.btn.danger{background:transparent;color:var(--accent);border:1px solid var(--accent);font-weight:400;font-size:0.88rem;padding:11px;margin-top:9px}
+footer{margin-top:30px;font-size:0.74rem;color:var(--muted);line-height:1.6}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Ma trame</h1>
+    <p class="sub" id="sousTitre">La forme de la semaine.</p>
+  </header>
+
+  <section>
+    <h2>La trame</h2>
+    <div class="carte" id="carte"></div>
+  </section>
+
+  <section>
+    <h2>Les blocs</h2>
+    <div id="listeJours"></div>
+  </section>
+
+  <section>
+    <div class="h2row">
+      <h2>Mes modèles</h2>
+      <button class="add" id="addMod">+ Modèle</button>
+    </div>
+    <div id="listeModeles"></div>
+  </section>
+
+  <section>
+    <div class="h2row">
+      <h2>Mes catégories</h2>
+      <button class="add" id="addCat">+ Catégorie</button>
+    </div>
+    <div id="listeCats"></div>
+  </section>
+
+  <section>
+    <h2>Sauvegarde</h2>
+    <div class="sauv">
+      <button class="mini" id="expBtn">Exporter</button>
+      <button class="mini" id="impBtn">Importer</button>
+      <input type="file" id="impFile" accept="application/json,.json" hidden>
+    </div>
+    <p class="note">Exporter enregistre vos catégories et tous vos modèles dans un
+    fichier. Gardez-le : c'est ainsi que vous les retrouverez après un changement
+    d'appareil. Importer relit ce fichier et remplace ce qui est ici.</p>
+  </section>
+
+  <footer>
+    Une trame, pas un agenda : elle montre la forme de la semaine, pas les rendez-vous.
+    Tout reste dans ce navigateur.
+  </footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<!-- Feuille : bloc -->
+<div class="sheet" id="shBloc">
+  <div class="sheet-in">
+    <h3 id="blocTitre">Ajouter un bloc</h3>
+    <p class="quand" id="blocQuand"></p>
+    <div id="blocBody"></div>
+  </div>
+</div>
+
+<!-- Feuille : catégorie -->
+<div class="sheet" id="shCat">
+  <div class="sheet-in">
+    <h3 id="catTitre">Nouvelle catégorie</h3>
+    <p class="quand">Un nom et une couleur.</p>
+    <div id="catWarn"></div>
+    <div class="lbl">Nom</div>
+    <input type="text" id="catNom" maxlength="24" placeholder="Atelier, Permanence…" aria-label="Nom de la catégorie">
+    <div class="lbl">Couleur</div>
+    <div class="pal" id="catPal"></div>
+    <p class="hint">Les couleurs déjà prises par une autre catégorie sont estompées.</p>
+    <button class="btn" id="catOk" disabled>Enregistrer</button>
+    <button class="btn danger" id="catDel" style="display:none">Supprimer cette catégorie</button>
+    <button class="btn ghost" id="catAnn">Annuler</button>
+  </div>
+</div>
+
+<!-- Feuille : modèle -->
+<div class="sheet" id="shMod">
+  <div class="sheet-in">
+    <h3 id="modTitre">Nouveau modèle</h3>
+    <p class="quand" id="modSub">Une période de l'année.</p>
+    <div id="modWarn"></div>
+    <div class="lbl">Nom</div>
+    <input type="text" id="modNom" maxlength="24" placeholder="Rentrée, Vacances…" aria-label="Nom du modèle">
+    <button class="btn" id="modOk" disabled>Enregistrer</button>
+    <button class="btn danger" id="modDel" style="display:none">Supprimer ce modèle</button>
+    <button class="btn ghost" id="modAnn">Annuler</button>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var K_CAT = 'matrame.categories';
+var K_MOD = 'matrame.modeles';
+var K_ACT = 'matrame.actif';
+
+var JOURS = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+var COURT = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+
+var DEB = 8*60 + 30;      // 8h30
+var FIN = 20*60 + 30;     // 20h30
+var PAS = 30;
+
+var PALETTE = [
+  '#7C4DCC', // violet
+  '#D4453E', // rouge
+  '#4FA3D1', // bleu clair
+  '#D97A45', // terracotta
+  '#5FAE7C', // vert
+  '#E3A92F', // ocre
+  '#D471A6', // rose
+  '#A79B8A'  // gris chaud
+];
+
+var categories = [];   // { id, nom, coul }
+var modeles = [];      // { id, nom, blocs:[ { id, jour, cat, deb, fin } ] }
+var actifId = null;
+
+var blocDraft = null;  // { jour, id|null, cat }
+var catDraft = null;   // { id|null, coul }
+var modDraft = null;   // { id|null, dupliquer:bool }
+
+/* ---------- utilitaires ---------- */
+
+function el(t,c){ var n=document.createElement(t); if(c) n.className=c; return n; }
+function opt(v,t){ var o=document.createElement('option'); o.value=v; o.textContent=t; return o; }
+function nid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function hhmm(m){ return String(Math.floor(m/60)).padStart(2,'0') + ':' + String(m%60).padStart(2,'0'); }
+function duree(m){
+  var h=Math.floor(m/60), r=m%60;
+  if(!h) return r + ' min';
+  return h + ' h' + (r ? ' ' + String(r).padStart(2,'0') : '');
+}
+function catOf(id){
+  for(var i=0;i<categories.length;i++) if(categories[i].id===id) return categories[i];
+  return { id:id, nom:'Catégorie', coul:'#8A8073' };
+}
+function modeleActif(){
+  for(var i=0;i<modeles.length;i++) if(modeles[i].id===actifId) return modeles[i];
+  return modeles[0] || null;
+}
+function blocs(){ var m=modeleActif(); return m ? m.blocs : []; }
+function couleurPrise(coul, saufId){
+  return categories.some(function(c){ return c.coul===coul && c.id!==saufId; });
+}
+function catUtilisee(id){
+  return modeles.some(function(m){
+    return m.blocs.some(function(b){ return b.cat===id; });
+  });
+}
+
+/* ---------- stockage ---------- */
+
+function save(){
+  try{
+    localStorage.setItem(K_CAT, JSON.stringify(categories));
+    localStorage.setItem(K_MOD, JSON.stringify(modeles));
+    localStorage.setItem(K_ACT, actifId || '');
+  }catch(e){}
+}
+function load(){
+  try{
+    var c = localStorage.getItem(K_CAT);
+    categories = c ? JSON.parse(c) : [];
+    if(!Array.isArray(categories)) categories = [];
+    var m = localStorage.getItem(K_MOD);
+    modeles = m ? JSON.parse(m) : [];
+    if(!Array.isArray(modeles)) modeles = [];
+    actifId = localStorage.getItem(K_ACT) || null;
+  }catch(e){ categories=[]; modeles=[]; actifId=null; }
+
+  if(!modeles.length){
+    modeles = [ { id:nid(), nom:'Ma trame', blocs:[] } ];
+    actifId = modeles[0].id;
+    save();
+  }
+  if(!modeleActif()) { actifId = modeles[0].id; save(); }
+}
+
+/* ---------- carte ---------- */
+
+function renderCarte(){
+  var box = document.getElementById('carte');
+  box.innerHTML = '';
+
+  var B = blocs();
+  if(!categories.length){
+    box.innerHTML = '<div class="ct-empty">Commence par créer une catégorie : un nom, une couleur.</div>';
+    return;
+  }
+  if(!B.length){
+    box.innerHTML = '<div class="ct-empty">Aucun bloc dans ce modèle.<br>Ajoute-les jour par jour ci-dessous.</div>';
+    return;
+  }
+
+  var span = FIN - DEB, H = 300;
+  var grid = el('div','ct-grid');
+  grid.appendChild(el('div',''));
+  COURT.forEach(function(j){
+    var h = el('div','ct-head'); h.textContent = j; grid.appendChild(h);
+  });
+
+  var axis = el('div','ct-axis');
+  axis.style.height = H + 'px';
+  for(var m = Math.ceil(DEB/120)*120; m <= FIN; m += 120){
+    var s = document.createElement('span');
+    s.style.top = ((m - DEB)/span*H) + 'px';
+    s.textContent = hhmm(m);
+    axis.appendChild(s);
+  }
+  grid.appendChild(axis);
+
+  for(var j=0; j<7; j++){
+    var col = el('div','ct-col');
+    col.style.height = H + 'px';
+    B.filter(function(b){ return b.jour === j; })
+     .sort(function(a,b){ return a.deb - b.deb; })
+     .forEach(function(b){
+       var C = catOf(b.cat);
+       var d = el('div','ct-bloc');
+       d.style.top    = ((b.deb - DEB)/span*H) + 'px';
+       d.style.height = Math.max(4, ((b.fin - b.deb)/span*H)) + 'px';
+       d.style.background = C.coul;
+       d.title = C.nom + ' ' + hhmm(b.deb) + '–' + hhmm(b.fin);
+       col.appendChild(d);
+     });
+    grid.appendChild(col);
+  }
+  box.appendChild(grid);
+
+  var lg = el('div','ct-legend');
+  var vues = {};
+  B.forEach(function(b){ vues[b.cat] = true; });
+  categories.filter(function(c){ return vues[c.id]; }).forEach(function(C){
+    var s = document.createElement('span');
+    s.innerHTML = '<i></i><span></span>';
+    s.firstChild.style.background = C.coul;
+    s.lastChild.textContent = C.nom;
+    lg.appendChild(s);
+  });
+  box.appendChild(lg);
+}
+
+/* ---------- liste des blocs ---------- */
+
+function renderJours(){
+  var box = document.getElementById('listeJours');
+  box.innerHTML = '';
+  var B = blocs();
+
+  JOURS.forEach(function(nom, j){
+    var jour = el('div','jour');
+    var head = el('div','jour-head');
+    var n = el('div','jour-nom'); n.textContent = nom; head.appendChild(n);
+
+    var add = el('button','add');
+    add.textContent = '+ Bloc';
+    add.addEventListener('click', function(){ openBloc(j, null); });
+    head.appendChild(add);
+    jour.appendChild(head);
+
+    var duJour = B.filter(function(b){ return b.jour === j; })
+                  .sort(function(a,b){ return a.deb - b.deb; });
+
+    if(!duJour.length){
+      var r = el('div','rien'); r.textContent = '—'; jour.appendChild(r);
+    }else{
+      duJour.forEach(function(b){ jour.appendChild(ligneBloc(b, j)); });
+    }
+    box.appendChild(jour);
+  });
+}
+
+function ligneBloc(b, j){
+  var C = catOf(b.cat);
+  var row = el('div','row');
+
+  var p = el('div','puce'); p.style.background = C.coul; row.appendChild(p);
+
+  var txt = el('div','txt');
+  var nm = el('div','nm'); nm.textContent = C.nom;
+  var dt = el('div','det'); dt.textContent = hhmm(b.deb) + ' – ' + hhmm(b.fin) + '  ·  ' + duree(b.fin - b.deb);
+  txt.appendChild(nm); txt.appendChild(dt); row.appendChild(txt);
+
+  var btns = el('div','row-btns');
+  var mod = el('button','mini');
+  mod.textContent = 'Modifier';
+  mod.addEventListener('click', function(){ openBloc(j, b.id); });
+  btns.appendChild(mod);
+
+  var x = el('button','del');
+  x.textContent = '×';
+  x.setAttribute('aria-label','Retirer ce bloc');
+  x.addEventListener('click', function(){
+    var m = modeleActif();
+    m.blocs = m.blocs.filter(function(o){ return o.id !== b.id; });
+    save(); draw();
+  });
+  btns.appendChild(x);
+
+  row.appendChild(btns);
+  return row;
+}
+
+/* ---------- modèles ---------- */
+
+function renderModeles(){
+  var box = document.getElementById('listeModeles');
+  box.innerHTML = '';
+
+  modeles.forEach(function(M, i){
+    var row = el('div','row' + (M.id === actifId ? ' actif' : ''));
+
+    var txt = el('div','txt');
+    var nm = el('div','nm'); nm.textContent = M.nom;
+    var dt = el('div','det');
+    dt.textContent = M.blocs.length + (M.blocs.length > 1 ? ' blocs' : ' bloc') +
+                     (M.id === actifId ? '  ·  affiché' : '');
+    txt.appendChild(nm); txt.appendChild(dt); row.appendChild(txt);
+
+    var btns = el('div','row-btns');
+
+    if(M.id !== actifId){
+      var vo = el('button','mini');
+      vo.textContent = 'Afficher';
+      vo.addEventListener('click', function(){
+        actifId = M.id; save(); draw();
+        window.scrollTo({ top:0, behavior:'smooth' });
+      });
+      btns.appendChild(vo);
+    }
+
+    var up = el('button','mv');
+    up.textContent = '↑'; up.disabled = (i === 0);
+    up.setAttribute('aria-label','Monter ' + M.nom);
+    up.addEventListener('click', function(){ bouger(modeles, i, -1); });
+    btns.appendChild(up);
+
+    var dn = el('button','mv');
+    dn.textContent = '↓'; dn.disabled = (i === modeles.length - 1);
+    dn.setAttribute('aria-label','Descendre ' + M.nom);
+    dn.addEventListener('click', function(){ bouger(modeles, i, 1); });
+    btns.appendChild(dn);
+
+    var ed = el('button','mini');
+    ed.textContent = 'Modifier';
+    ed.addEventListener('click', function(){ openMod(M.id, false); });
+    btns.appendChild(ed);
+
+    var du = el('button','mini');
+    du.textContent = 'Dupliquer';
+    du.addEventListener('click', function(){ openMod(M.id, true); });
+    btns.appendChild(du);
+
+    row.appendChild(btns);
+    box.appendChild(row);
+  });
+}
+
+/* ---------- catégories ---------- */
+
+function renderCats(){
+  var box = document.getElementById('listeCats');
+  box.innerHTML = '';
+
+  if(!categories.length){
+    var v = el('div','vide');
+    v.textContent = 'Aucune catégorie pour l\'instant. Crée-en une : un nom, une couleur. Ce sont elles qui colorent la carte.';
+    box.appendChild(v);
+    return;
+  }
+
+  categories.forEach(function(C, i){
+    var row = el('div','row');
+    var p = el('div','puce'); p.style.background = C.coul; row.appendChild(p);
+
+    var txt = el('div','txt');
+    var nm = el('div','nm'); nm.textContent = C.nom;
+    txt.appendChild(nm); row.appendChild(txt);
+
+    var btns = el('div','row-btns');
+
+    var up = el('button','mv');
+    up.textContent = '↑'; up.disabled = (i === 0);
+    up.setAttribute('aria-label','Monter ' + C.nom);
+    up.addEventListener('click', function(){ bouger(categories, i, -1); });
+    btns.appendChild(up);
+
+    var dn = el('button','mv');
+    dn.textContent = '↓'; dn.disabled = (i === categories.length - 1);
+    dn.setAttribute('aria-label','Descendre ' + C.nom);
+    dn.addEventListener('click', function(){ bouger(categories, i, 1); });
+    btns.appendChild(dn);
+
+    var ed = el('button','mini');
+    ed.textContent = 'Modifier';
+    ed.addEventListener('click', function(){ openCat(C.id); });
+    btns.appendChild(ed);
+
+    row.appendChild(btns);
+    box.appendChild(row);
+  });
+}
+
+function bouger(tab, i, d){
+  var j = i + d;
+  if(j < 0 || j >= tab.length) return;
+  var t = tab[i]; tab[i] = tab[j]; tab[j] = t;
+  save(); draw();
+}
+
+/* ---------- feuille : bloc ---------- */
+
+function openBloc(jour, id){
+  var B = blocs();
+  var b = id ? B.filter(function(o){ return o.id === id; })[0] : null;
+  blocDraft = { jour:jour, id:id, cat: b ? b.cat : (categories[0] ? categories[0].id : null) };
+
+  document.getElementById('blocTitre').textContent = b ? 'Modifier le bloc' : 'Ajouter un bloc';
+  document.getElementById('blocQuand').textContent = JOURS[jour];
+  renderBlocBody(b);
+  document.getElementById('shBloc').classList.add('on');
+}
+function closeBloc(){
+  blocDraft = null;
+  document.getElementById('shBloc').classList.remove('on');
+}
+
+function renderBlocBody(b){
+  var body = document.getElementById('blocBody');
+  body.innerHTML = '';
+
+  if(!categories.length){
+    var w = el('div','warn');
+    w.textContent = 'Il faut d\'abord créer au moins une catégorie.';
+    body.appendChild(w);
+    var go = el('button','btn');
+    go.textContent = 'Créer une catégorie';
+    go.addEventListener('click', function(){ closeBloc(); openCat(null); });
+    body.appendChild(go);
+    var an0 = el('button','btn ghost');
+    an0.textContent = 'Annuler';
+    an0.addEventListener('click', closeBloc);
+    body.appendChild(an0);
+    return;
+  }
+
+  var l1 = el('div','lbl'); l1.textContent = 'Catégorie'; body.appendChild(l1);
+  var ch = el('div','choix');
+  categories.forEach(function(C){
+    var o = el('button','opt');
+    o.setAttribute('aria-pressed', blocDraft.cat === C.id);
+    o.innerHTML = '<i class="puce"></i><span class="n"></span>';
+    o.firstChild.style.background = C.coul;
+    o.lastChild.textContent = C.nom;
+    o.addEventListener('click', function(){
+      blocDraft.cat = C.id;
+      var deb = selDeb.value, fin = selFin.value;
+      renderBlocBody(b);
+      document.getElementById('blocDeb').value = deb;
+      document.getElementById('blocFin').value = fin;
+    });
+    ch.appendChild(o);
+  });
+  body.appendChild(ch);
+
+  var l2 = el('div','lbl'); l2.textContent = 'De … à …'; body.appendChild(l2);
+  var times = el('div','times');
+  var selDeb = document.createElement('select');
+  var selFin = document.createElement('select');
+  selDeb.id = 'blocDeb'; selFin.id = 'blocFin';
+  selDeb.setAttribute('aria-label','Début'); selFin.setAttribute('aria-label','Fin');
+  for(var m = DEB; m <= FIN - PAS; m += PAS) selDeb.appendChild(opt(m, hhmm(m)));
+  for(var n = DEB + PAS; n <= FIN; n += PAS) selFin.appendChild(opt(n, hhmm(n)));
+  selDeb.value = b ? b.deb : 9*60;
+  selFin.value = b ? b.fin : 11*60;
+  var sep = document.createElement('em'); sep.textContent = 'à';
+  times.appendChild(selDeb); times.appendChild(sep); times.appendChild(selFin);
+  body.appendChild(times);
+
+  var msg = el('p','hint');
+  msg.textContent = 'La fin doit être après le début.';
+  body.appendChild(msg);
+
+  var ok = el('button','btn');
+  ok.textContent = b ? 'Enregistrer' : 'Ajouter';
+  function verifier(){
+    ok.disabled = (parseInt(selFin.value,10) <= parseInt(selDeb.value,10));
+  }
+  selDeb.addEventListener('change', function(){
+    if(parseInt(selFin.value,10) <= parseInt(selDeb.value,10)){
+      selFin.value = Math.min(FIN, parseInt(selDeb.value,10) + PAS);
+    }
+    verifier();
+  });
+  selFin.addEventListener('change', verifier);
+  verifier();
+
+  ok.addEventListener('click', function(){
+    var deb = parseInt(selDeb.value,10), fin = parseInt(selFin.value,10);
+    if(fin <= deb) return;
+    var M = modeleActif();
+    if(blocDraft.id){
+      M.blocs.forEach(function(o){
+        if(o.id === blocDraft.id){ o.cat = blocDraft.cat; o.deb = deb; o.fin = fin; }
+      });
+    }else{
+      M.blocs.push({ id:nid(), jour:blocDraft.jour, cat:blocDraft.cat, deb:deb, fin:fin });
+    }
+    save(); closeBloc(); draw();
+  });
+  body.appendChild(ok);
+
+  var an = el('button','btn ghost');
+  an.textContent = 'Annuler';
+  an.addEventListener('click', closeBloc);
+  body.appendChild(an);
+}
+
+/* ---------- feuille : catégorie ---------- */
+
+function openCat(id){
+  var C = id ? catOf(id) : null;
+  catDraft = { id:id, coul: C ? C.coul : premiereLibre() };
+
+  document.getElementById('catTitre').textContent = C ? 'Modifier la catégorie' : 'Nouvelle catégorie';
+  document.getElementById('catNom').value = C ? C.nom : '';
+
+  var warn = document.getElementById('catWarn');
+  warn.innerHTML = '';
+  var del = document.getElementById('catDel');
+  if(C){
+    del.style.display = 'block';
+    if(catUtilisee(id)){
+      del.disabled = true; del.style.opacity = '0.35';
+      var w = el('div','warn');
+      w.textContent = 'Des blocs utilisent cette catégorie, dans ce modèle ou dans un autre. Retire-les d\'abord si tu veux la supprimer.';
+      warn.appendChild(w);
+    }else{
+      del.disabled = false; del.style.opacity = '';
+    }
+  }else{
+    del.style.display = 'none';
+  }
+
+  renderPal();
+  majCatOk();
+  document.getElementById('shCat').classList.add('on');
+}
+function closeCat(){
+  catDraft = null;
+  document.getElementById('shCat').classList.remove('on');
+}
+function premiereLibre(){
+  for(var i=0;i<PALETTE.length;i++) if(!couleurPrise(PALETTE[i], null)) return PALETTE[i];
+  return PALETTE[0];
+}
+function renderPal(){
+  var box = document.getElementById('catPal');
+  box.innerHTML = '';
+  PALETTE.forEach(function(coul){
+    var b = document.createElement('button');
+    b.style.background = coul;
+    b.setAttribute('aria-label','Couleur ' + coul);
+    b.setAttribute('aria-pressed', catDraft.coul === coul);
+    b.disabled = couleurPrise(coul, catDraft.id);
+    b.addEventListener('click', function(){
+      catDraft.coul = coul;
+      renderPal();
+    });
+    box.appendChild(b);
+  });
+}
+function majCatOk(){
+  var nom = document.getElementById('catNom').value.trim();
+  document.getElementById('catOk').disabled = !nom;
+}
+document.getElementById('catNom').addEventListener('input', majCatOk);
+
+document.getElementById('catOk').addEventListener('click', function(){
+  var nom = document.getElementById('catNom').value.trim();
+  if(!nom) return;
+  if(catDraft.id){
+    var C = catOf(catDraft.id);
+    C.nom = nom; C.coul = catDraft.coul;
+  }else{
+    categories.push({ id:nid(), nom:nom, coul:catDraft.coul });
+  }
+  save(); closeCat(); draw();
+});
+document.getElementById('catDel').addEventListener('click', function(){
+  if(!catDraft || !catDraft.id || catUtilisee(catDraft.id)) return;
+  var C = catOf(catDraft.id);
+  if(!confirm('Supprimer « ' + C.nom + ' » ?')) return;
+  categories = categories.filter(function(o){ return o.id !== catDraft.id; });
+  save(); closeCat(); draw();
+});
+document.getElementById('catAnn').addEventListener('click', closeCat);
+document.getElementById('addCat').addEventListener('click', function(){ openCat(null); });
+
+/* ---------- feuille : modèle ---------- */
+
+function openMod(id, dupliquer){
+  modDraft = { id:id, dupliquer:!!dupliquer };
+  var M = id ? modeles.filter(function(o){ return o.id === id; })[0] : null;
+
+  document.getElementById('modTitre').textContent =
+    dupliquer ? 'Dupliquer le modèle' : (M ? 'Modifier le modèle' : 'Nouveau modèle');
+  document.getElementById('modSub').textContent =
+    dupliquer ? 'Une copie de « ' + M.nom +' », blocs compris.' : 'Une période de l\'année.';
+  document.getElementById('modNom').value =
+    dupliquer ? M.nom + ' (copie)' : (M ? M.nom : '');
+
+  var warn = document.getElementById('modWarn');
+  warn.innerHTML = '';
+  var del = document.getElementById('modDel');
+
+  if(M && !dupliquer){
+    del.style.display = 'block';
+    if(modeles.length <= 1){
+      del.disabled = true; del.style.opacity = '0.35';
+      var w = el('div','warn');
+      w.textContent = 'C\'est le seul modèle : il ne peut pas être supprimé.';
+      warn.appendChild(w);
+    }else{
+      del.disabled = false; del.style.opacity = '';
+    }
+  }else{
+    del.style.display = 'none';
+  }
+
+  majModOk();
+  document.getElementById('shMod').classList.add('on');
+}
+function closeMod(){
+  modDraft = null;
+  document.getElementById('shMod').classList.remove('on');
+}
+function majModOk(){
+  var nom = document.getElementById('modNom').value.trim();
+  document.getElementById('modOk').disabled = !nom;
+}
+document.getElementById('modNom').addEventListener('input', majModOk);
+
+document.getElementById('modOk').addEventListener('click', function(){
+  var nom = document.getElementById('modNom').value.trim();
+  if(!nom) return;
+
+  if(modDraft.dupliquer){
+    var src = modeles.filter(function(o){ return o.id === modDraft.id; })[0];
+    var copie = { id:nid(), nom:nom, blocs: src.blocs.map(function(b){
+      return { id:nid(), jour:b.jour, cat:b.cat, deb:b.deb, fin:b.fin };
+    }) };
+    modeles.push(copie);
+    actifId = copie.id;
+  }else if(modDraft.id){
+    modeles.forEach(function(o){ if(o.id === modDraft.id) o.nom = nom; });
+  }else{
+    var neuf = { id:nid(), nom:nom, blocs:[] };
+    modeles.push(neuf);
+    actifId = neuf.id;
+  }
+  save(); closeMod(); draw();
+  window.scrollTo({ top:0, behavior:'smooth' });
+});
+
+document.getElementById('modDel').addEventListener('click', function(){
+  if(!modDraft || !modDraft.id || modeles.length <= 1) return;
+  var M = modeles.filter(function(o){ return o.id === modDraft.id; })[0];
+  if(!confirm('Supprimer « ' + M.nom + ' » et tous ses blocs ?')) return;
+  modeles = modeles.filter(function(o){ return o.id !== modDraft.id; });
+  if(actifId === modDraft.id) actifId = modeles[0].id;
+  save(); closeMod(); draw();
+});
+document.getElementById('modAnn').addEventListener('click', closeMod);
+document.getElementById('addMod').addEventListener('click', function(){ openMod(null, false); });
+
+/* ---------- fermeture au clic extérieur ---------- */
+
+['shBloc','shCat','shMod'].forEach(function(id){
+  document.getElementById(id).addEventListener('click', function(e){
+    if(e.target !== this) return;
+    if(id === 'shBloc') closeBloc();
+    else if(id === 'shCat') closeCat();
+    else closeMod();
+  });
+});
+
+/* ---------- sauvegarde ---------- */
+
+var FORMAT = 1;
+
+function nomFichier(){
+  var d = new Date();
+  return 'ma-trame-' + d.getFullYear() + '-' +
+         String(d.getMonth()+1).padStart(2,'0') + '-' +
+         String(d.getDate()).padStart(2,'0') + '.json';
+}
+
+document.getElementById('expBtn').addEventListener('click', function(){
+  var paquet = {
+    app: 'ma-trame',
+    format: FORMAT,
+    exporte: new Date().toISOString(),
+    categories: categories,
+    modeles: modeles,
+    actif: actifId
+  };
+  var texte = JSON.stringify(paquet, null, 2);
+  var blob = new Blob([texte], { type:'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = nomFichier();
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+  toast('Fichier enregistré');
+});
+
+document.getElementById('impBtn').addEventListener('click', function(){
+  document.getElementById('impFile').click();
+});
+
+document.getElementById('impFile').addEventListener('change', function(e){
+  var f = e.target.files && e.target.files[0];
+  e.target.value = '';                 // permet de réimporter le même fichier
+  if(!f) return;
+
+  var lecteur = new FileReader();
+  lecteur.onerror = function(){ toast('Fichier illisible'); };
+  lecteur.onload = function(){
+    var p;
+    try{ p = JSON.parse(lecteur.result); }
+    catch(err){ toast('Ce fichier n\'est pas une sauvegarde'); return; }
+
+    // 'ma-semaine' : sauvegardes faites avant le changement de nom.
+    if(!p || (p.app !== 'ma-trame' && p.app !== 'ma-semaine')){
+      toast('Cette sauvegarde vient d\'une autre application');
+      return;
+    }
+    if(!Array.isArray(p.categories) || !Array.isArray(p.modeles) || !p.modeles.length){
+      toast('Sauvegarde incomplète');
+      return;
+    }
+
+    var nb = p.modeles.length;
+    var quoi = (nb > 1) ? ('vos ' + nb + ' modèles') : 'votre modèle';
+    if(!confirm('Remplacer vos catégories et ' + quoi +
+                ' par le contenu de ce fichier ?\n\nCe qui est ici sera perdu.')) return;
+
+    categories = p.categories;
+    modeles = p.modeles;
+    actifId = p.actif;
+    if(!modeleActif()) actifId = modeles[0].id;
+    save(); draw();
+    window.scrollTo({ top:0, behavior:'smooth' });
+    toast('Sauvegarde restaurée');
+  };
+  lecteur.readAsText(f);
+});
+
+var toastT;
+function toast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  clearTimeout(toastT);
+  toastT = setTimeout(function(){ t.classList.remove('on'); }, 2600);
+}
+
+/* ---------- rendu global ---------- */
+
+function draw(){
+  var M = modeleActif();
+  document.getElementById('sousTitre').textContent = M ? M.nom : 'La forme de la semaine.';
+  renderCarte(); renderJours(); renderModeles(); renderCats();
+}
+
+load();
+draw();
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('./service-worker.js', { scope:'./' }).catch(function(){});
+  });
+}
+
+})();
+</script>
+</body>
+</html>
