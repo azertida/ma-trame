@@ -343,6 +343,43 @@ function load(){
 
 /* ---------- carte ---------- */
 
+/* ---------- carte ---------- */
+
+// Répartit les blocs d'un même jour en couloirs côte à côte quand ils se
+// chevauchent. Chaque bloc reçoit _c (son couloir) et _n (le nombre de couloirs
+// du groupe auquel il appartient). Sans chevauchement, _n vaut 1 et le bloc
+// occupe toute la largeur.
+function couloirs(liste){
+  var tri = liste.slice().sort(function(a,b){
+    return a.deb === b.deb ? b.fin - a.fin : a.deb - b.deb;
+  });
+
+  var groupe = [], finGroupe = -1;
+
+  function cloturer(){
+    if(!groupe.length) return;
+    var voies = [];                       // fin du dernier bloc de chaque voie
+    groupe.forEach(function(b){
+      var v = 0;
+      while(v < voies.length && voies[v] > b.deb) v++;
+      if(v === voies.length) voies.push(b.fin);
+      else voies[v] = b.fin;
+      b._c = v;
+    });
+    groupe.forEach(function(b){ b._n = voies.length; });
+    groupe = [];
+  }
+
+  tri.forEach(function(b){
+    if(groupe.length && b.deb >= finGroupe){ cloturer(); finGroupe = -1; }
+    groupe.push(b);
+    if(b.fin > finGroupe) finGroupe = b.fin;
+  });
+  cloturer();
+
+  return tri;
+}
+
 function renderCarte(){
   var box = document.getElementById('carte');
   box.innerHTML = '';
@@ -377,13 +414,15 @@ function renderCarte(){
   for(var j=0; j<7; j++){
     var col = el('div','ct-col');
     col.style.height = H + 'px';
-    B.filter(function(b){ return b.jour === j; })
-     .sort(function(a,b){ return a.deb - b.deb; })
+    couloirs(B.filter(function(b){ return b.jour === j; }))
      .forEach(function(b){
        var C = catOf(b.cat);
        var d = el('div','ct-bloc');
        d.style.top    = ((b.deb - DEB)/span*H) + 'px';
        d.style.height = Math.max(4, ((b.fin - b.deb)/span*H)) + 'px';
+       d.style.left   = 'calc(1px + ' + (b._c / b._n * 100) + '%)';
+       d.style.width  = 'calc(' + (100 / b._n) + '% - 2px)';
+       d.style.right  = 'auto';
        d.style.background = C.coul;
        d.title = C.nom + ' ' + hhmm(b.deb) + '–' + hhmm(b.fin);
        col.appendChild(d);
