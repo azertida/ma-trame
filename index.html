@@ -40,6 +40,10 @@ h2{font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.0
 .carte{background:#FFFDF8;border:1px solid var(--line);border-radius:12px;padding:12px 10px 10px}
 .ct-grid{display:grid;grid-template-columns:2.6rem repeat(7,1fr);gap:3px}
 .ct-head{text-align:center;font-size:0.66rem;font-weight:600;color:var(--muted);padding-bottom:5px}
+.ct-head.auj{color:var(--accent)}
+.ct-col.auj{
+  box-shadow: -2px 0 0 var(--accent), 2px 0 0 var(--accent);
+}
 .ct-axis{position:relative}
 .ct-axis span{
   position:absolute;right:5px;transform:translateY(-50%);
@@ -397,8 +401,14 @@ function renderCarte(){
   var span = FIN - DEB, H = 300;
   var grid = el('div','ct-grid');
   grid.appendChild(el('div',''));
-  COURT.forEach(function(j){
-    var h = el('div','ct-head'); h.textContent = j; grid.appendChild(h);
+  // Repère « vous êtes ici » : la trame ne date rien, elle signale seulement
+  // où poser l'œil. getDay() rend 0 pour dimanche, nos colonnes commencent lundi.
+  var auj = (new Date().getDay() + 6) % 7;
+
+  COURT.forEach(function(j, i){
+    var h = el('div','ct-head' + (i === auj ? ' auj' : ''));
+    h.textContent = j;
+    grid.appendChild(h);
   });
 
   var axis = el('div','ct-axis');
@@ -412,7 +422,7 @@ function renderCarte(){
   grid.appendChild(axis);
 
   for(var j=0; j<7; j++){
-    var col = el('div','ct-col');
+    var col = el('div','ct-col' + (j === auj ? ' auj' : ''));
     col.style.height = H + 'px';
     couloirs(B.filter(function(b){ return b.jour === j; }))
      .forEach(function(b){
