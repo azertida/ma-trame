@@ -3,7 +3,7 @@
    Icônes et manifeste : cache d'abord (ils ne changent jamais).
    Pour forcer un renouvellement complet du cache, incrémenter CACHE. */
 
-const CACHE = 'ma-trame-v1';
+const CACHE = 'ma-trame-v2';
 
 const SHELL = [
   './',
