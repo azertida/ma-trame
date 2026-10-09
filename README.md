@@ -20,8 +20,8 @@ Fichier unique, stockage local, aucune dépendance, aucun serveur.
 
 ## Fonctionnement
 
-Une semaine générique, du lundi au dimanche, de 8h30 à 20h30, au pas de la
-demi-heure. Pas de dates : cette semaine-là ne se périme pas.
+Une semaine générique, du lundi au dimanche, de 8h30 à 20h30, au pas du
+quart d'heure. Pas de dates : cette semaine-là ne se périme pas.
 
 On définit ses **catégories** — un nom, une couleur — puis on pose des **blocs**,
 jour par jour. La trame du haut les affiche proportionnellement, chacun à la couleur
@@ -61,18 +61,23 @@ mêmes activités qui se répartissent autrement selon la période.
 
 ## Couleurs
 
-Palette fermée de huit teintes, choisies pour rester distinguables en petits blocs :
+Palette fermée de douze teintes, toutes dans le même registre — vives, mi-claires,
+posées sur le papier chaud :
 
-| Teinte | Code |
-|---|---|
-| Violet | `#7C4DCC` |
-| Rouge | `#D4453E` |
-| Bleu clair | `#4FA3D1` |
-| Terracotta | `#D97A45` |
-| Vert | `#5FAE7C` |
-| Ocre | `#E3A92F` |
-| Rose | `#D471A6` |
-| Gris chaud | `#A79B8A` |
+| Teinte | Code | | Teinte | Code |
+|---|---|---|---|---|
+| Violet | `#7C4DCC` | | Rose | `#D471A6` |
+| Rouge | `#D4453E` | | Gris chaud | `#A79B8A` |
+| Bleu clair | `#4FA3D1` | | Turquoise | `#3BB3A6` |
+| Terracotta | `#D97A45` | | Bleu roi | `#5570D8` |
+| Vert | `#5FAE7C` | | Lavande | `#A98AE6` |
+| Ocre | `#E3A92F` | | Vert citron | `#8FC04E` |
+
+Douze et pas davantage : au-delà, ce qui sépare deux teintes n'est plus la couleur
+mais la clarté, et il faut assombrir — ce qui casse la cohérence de l'ensemble. Le
+plafond de douze catégories tient parce que les catégories devenues inutiles se
+recyclent : une trame ponctuelle, faite pour être partagée en capture d'écran, se
+supprime ensuite et libère les siennes.
 
 Plus vives que la charte habituelle, volontairement : la carte se lit en blocs de
 quelques pixels de haut, et le contraste y compte plus que la retenue. Le gris chaud
@@ -85,7 +90,26 @@ celles déjà prises sont estompées dans la palette. Huit couleurs laissent de 
 marge ; en vouloir une neuvième signalerait qu'on dérive vers l'agenda.
 
 Pas d'emoji non plus, contrairement à *Sous réserve* : un emoji serait illisible dans
-un bloc d'une demi-heure, et la couleur suffit puisque la liste nomme chaque bloc.
+un bloc d'un quart d'heure, et la couleur suffit puisque la liste nomme chaque bloc.
+
+## Blocs simultanés
+
+Deux blocs qui se recouvrent — un cours donné pendant une permanence — se partagent
+la largeur de la colonne, chacun dans son couloir, à la manière d'un agenda. Sans
+recouvrement, un bloc occupe toute la largeur.
+
+Avant, le second bloc se posait par-dessus le premier et le masquait : le
+chevauchement était possible mais invisible, ce qui était un mensonge silencieux.
+
+La répartition se fait par groupes de blocs qui se chevauchent de proche en proche,
+et une voie libérée est réutilisée plus bas dans le même groupe. Trois blocs
+simultanés donnent trois couloirs, soit une quinzaine de pixels chacun sur
+téléphone — au-delà, ce n'est plus lisible, mais rien ne l'interdit.
+
+Les alternatives écartées : une couleur réservée au recouvrement, qui aurait dit
+qu'il y a conflit sans dire entre quoi et quoi, et mélangé deux significations dans
+le même canal ; un bloc coupé en deux dans la hauteur, que la géométrie de la carte
+ferait lire comme une succession alors qu'il s'agit de simultanéité.
 
 ## Suppression d'une catégorie
 
@@ -130,8 +154,9 @@ anciens formats plutôt qu'un rejet.
 ## Bornes
 
 `DEB` et `FIN` en tête du script, en minutes depuis minuit, et `PAS` pour la
-granularité. Élargir l'amplitude allonge la carte sans rien casser ; descendre `PAS`
-sous 30 minutes multiplierait les options des sélecteurs sans gain réel.
+granularité. Élargir l'amplitude allonge la carte sans rien casser. `PAS` vaut 15 :
+descendre plus bas multiplierait les options des sélecteurs sans gain réel, et les
+blocs déjà posés restent valides quelle que soit sa valeur.
 
 ## PWA
 
