@@ -83,6 +83,13 @@ pastille s'effacerait sur le fond crème des listes, d'où le filet d'un pixel p
 sur **toutes** les pastilles — invisible sur les couleurs foncées, indispensable
 pour celle-là. Ne pas le retirer.
 
+Sur la carte, le blanc doux se détache en douceur plutôt que franchement — c'est
+assumé. Poser le même filet autour des blocs de la carte a été essayé puis écarté :
+la carte se lit par masses, et un contour transforme chaque bloc en forme délimitée,
+l'œil suit alors des bords au lieu d'embrasser des aplats. Le filet reste donc
+réservé aux pastilles, qui sont de petits carrés isolés sur fond crème. Ne pas
+réessayer.
+
 Le plafond de dix catégories tient parce que celles devenues inutiles se recyclent :
 une trame ponctuelle, faite pour être partagée en capture d'écran, se supprime
 ensuite et libère les siennes.
