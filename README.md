@@ -61,23 +61,31 @@ mêmes activités qui se répartissent autrement selon la période.
 
 ## Couleurs
 
-Palette fermée de douze teintes, toutes dans le même registre — vives, mi-claires,
-posées sur le papier chaud :
+Palette fermée de dix teintes :
 
 | Teinte | Code | | Teinte | Code |
 |---|---|---|---|---|
-| Violet | `#7C4DCC` | | Rose | `#D471A6` |
-| Rouge | `#D4453E` | | Gris chaud | `#A79B8A` |
-| Bleu clair | `#4FA3D1` | | Turquoise | `#3BB3A6` |
-| Terracotta | `#D97A45` | | Bleu roi | `#5570D8` |
-| Vert | `#5FAE7C` | | Lavande | `#A98AE6` |
-| Ocre | `#E3A92F` | | Vert citron | `#8FC04E` |
+| Violet | `#7C4DCC` | | Ocre | `#E3A92F` |
+| Rouge | `#D4453E` | | Rose | `#D471A6` |
+| Bleu clair | `#4FA3D1` | | Gris chaud | `#A79B8A` |
+| Terracotta | `#D97A45` | | Noir doux | `#3A342E` |
+| Vert | `#5FAE7C` | | Blanc doux | `#FBF7EF` |
 
-Douze et pas davantage : au-delà, ce qui sépare deux teintes n'est plus la couleur
-mais la clarté, et il faut assombrir — ce qui casse la cohérence de l'ensemble. Le
-plafond de douze catégories tient parce que les catégories devenues inutiles se
-recyclent : une trame ponctuelle, faite pour être partagée en capture d'écran, se
-supprime ensuite et libère les siennes.
+Huit teintes colorées, pas davantage : à clarté constante, la roue des couleurs ne
+tient qu'environ huit écarts franchement lisibles, et au-delà il faut assombrir —
+ce qui casse le registre — ou accepter des voisines trop proches. Une tentative à
+douze a été annulée pour cette raison.
+
+Les deux dernières échappent à cette limite parce qu'elles ne jouent pas sur la
+teinte mais sur la clarté : elles ne concurrencent rien. Le blanc doux reste visible
+sur la carte, puisque les colonnes sont beiges et lui plus clair ; en revanche sa
+pastille s'effacerait sur le fond crème des listes, d'où le filet d'un pixel posé
+sur **toutes** les pastilles — invisible sur les couleurs foncées, indispensable
+pour celle-là. Ne pas le retirer.
+
+Le plafond de dix catégories tient parce que celles devenues inutiles se recyclent :
+une trame ponctuelle, faite pour être partagée en capture d'écran, se supprime
+ensuite et libère les siennes.
 
 Plus vives que la charte habituelle, volontairement : la carte se lit en blocs de
 quelques pixels de haut, et le contraste y compte plus que la retenue. Le gris chaud
